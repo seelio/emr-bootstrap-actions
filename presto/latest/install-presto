@@ -10,6 +10,7 @@ def parseOptions
 		#:presto_home => "/home/hadoop/.versions/presto-server-0.95/",
 		:cli => true,
 		#:binary => "s3://support.elasticmapreduce/bootstrap-actions/presto/0.95/presto-server-0-95.tar.gz",
+		:sched_coord => false,
 		:version => "0.99"
 	}
 
@@ -49,6 +50,11 @@ def parseOptions
 	    opt.on("-c",'--install-cli [ Install Presto-CLI. By default set to true ]',
 	           "Ex : false") do |cli|
 	      		config_options[:cli] = cli
+	    end
+
+	    opt.on("-s",'--sched-coord [ Allow the node scheduler to include the coordinator when scheduling work. See https://prestodb.io/docs/current/installation/deployment.html for more. By default set to false ]',
+	           "Ex : false") do |sched_coord|
+	      		config_options[:sched_coord] = sched_coord
 	    end
 
 	    opt.on("-M",'--metastore-uri [ Location of Already Running Hive MetaStore. This will stop the BA from launching the Hive MetaStore Service on the Master Instance ]',
@@ -160,7 +166,13 @@ def setConfigProperties(metaData)
     config << 'http-server.threads.max=500'
     config << 'discovery-server.enabled=true'
     config << 'sink.max-buffer-size=1GB'
-    config << 'node-scheduler.include-coordinator=false'
+
+	if @parsed[:sched_coord] == true
+		config << 'node-scheduler.include-coordinator=true'
+	else
+		config << 'node-scheduler.include-coordinator=false'
+	end
+
     config << "task.max-memory=#{memory['max']}MB"
     config << 'query.max-history=40'
     config << 'query.max-age=30m'
