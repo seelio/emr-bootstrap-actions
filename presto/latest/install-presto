@@ -54,7 +54,7 @@ def parseOptions
 
 	    opt.on("-s",'--sched-coord [ Allow the node scheduler to include the coordinator when scheduling work. See https://prestodb.io/docs/current/installation/deployment.html for more. By default set to false ]',
 	           "Ex : false") do |sched_coord|
-	      		config_options[:sched_coord] = sched_coord
+	      		config_options[:sched_coord] = (sched_coord.downcase() == 'true') ? true : false
 	    end
 
 	    opt.on("-M",'--metastore-uri [ Location of Already Running Hive MetaStore. This will stop the BA from launching the Hive MetaStore Service on the Master Instance ]',
